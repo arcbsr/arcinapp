@@ -2,6 +2,10 @@
 
 
     implementation 'com.github.arcbsr:arcinapp:111'
+    
+    maven { url 'https://jitpack.io' }
+    
+    
 //adb shell pm clear com.android.vending -->> clearin app test billing
 // @Override 
 // protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
