@@ -48,6 +48,8 @@ public class InAppBillingBaseActivity extends AppCompatActivity implements Billi
 
     @Override
     public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+        if (arcInAppBilling != null)
+            arcInAppBilling.setPurchased(productId);
         onFinishedActivity(RESULT_OK, ArcInAppBilling.INAPP_SUCCESS_PURCHASED);
     }
 
@@ -63,11 +65,11 @@ public class InAppBillingBaseActivity extends AppCompatActivity implements Billi
 
     @Override
     public void onBillingInitialized() {
-        arcInAppBilling.onBillingInitialized();
         if (arcInAppBilling == null) {
             onFinishedActivity(RESULT_CANCELED);
             return;
         }
+        arcInAppBilling.onBillingInitialized();
         int bpCode = arcInAppBilling.purchase(mProductId);
         if (bpCode != ArcInAppBilling.INAPP_PROCESSING) {
             onFinishedActivity(RESULT_CANCELED, bpCode);
@@ -101,9 +103,20 @@ public class InAppBillingBaseActivity extends AppCompatActivity implements Billi
     }
 
     public static boolean isPurchased(Activity context, String pid) {
-        if (InAppBillingPref.getBooleanSetting(context, pid, false)) {
-            return true;
+        boolean isPurchased = InAppBillingPref.getBooleanSetting(context.getApplicationContext(), pid, false);
+        return isPurchased;
+        // return new ArcInAppBilling(context).isPurchasedLocal(pid);
+    }
+
+    public static void setPurchased(Activity context, Intent data) {
+        if (data == null || !data.hasExtra(InAppBillingBaseActivity.KEY_PRODUCT_ID)) {
+            return;
         }
-        return false;
+        int code = data.getIntExtra(InAppBillingBaseActivity.KEY_RESULTCODE, -1);
+        if (code == ArcInAppBilling.INAPP_ALREADY_PURCHASED || code == ArcInAppBilling.INAPP_SUCCESS_PURCHASED) {
+            InAppBillingPref.setSetting(context.getApplicationContext(),
+                    data.getStringExtra(InAppBillingBaseActivity.KEY_PRODUCT_ID), true);
+        }
+        // return new ArcInAppBilling(context).isPurchasedLocal(pid);
     }
 }

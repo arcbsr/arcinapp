@@ -50,7 +50,7 @@ public class ArcInAppBilling {
     }
 
     public static String getbpCodeStatus(final int bpCode) {
-        VLog.w("<<>>" + bpCode);
+        //VLog.w(bpCode + ">>" );
         switch (bpCode) {
             case INAPP_ALREADY_PURCHASED:
                 return "INAPP_ALREADY_PURCHASED";
@@ -80,7 +80,6 @@ public class ArcInAppBilling {
             return bpCode;
         }
         if (isPurchased(pID)) {
-
             return INAPP_ALREADY_PURCHASED;
         }
         bp.purchase(context, pID);
@@ -101,7 +100,7 @@ public class ArcInAppBilling {
     }
 
     public boolean isPurchased(String pID) {
-        if (InAppBillingPref.getBooleanSetting(context, pID, false)) {
+        if (isPurchasedLocal(pID)) {
             return true;
         }
         int bpCode = bpErrorCode();
@@ -109,10 +108,21 @@ public class ArcInAppBilling {
             return false;
         }
         if (bp.isPurchased(pID)) {
-            InAppBillingPref.setSetting(context, pID, true);
+            //InAppBillingPref.setSetting(context.getApplicationContext(), pID, true);
+            setPurchased(pID);
             return true;
         }
         return false;
+    }
+
+    public void setPurchased(String keyId) {
+        InAppBillingPref.setSetting(context.getApplicationContext(), keyId, true);
+
+    }
+
+    public boolean isPurchasedLocal(String keyId) {
+        return InAppBillingPref.getBooleanSetting(context.getApplicationContext(), keyId, false);
+
     }
 
     Activity context = null;
@@ -120,7 +130,8 @@ public class ArcInAppBilling {
     public ArcInAppBilling(@Nullable Activity context) {
         this.context = context;
     }
-    public void init(BillingProcessor.IBillingHandler appBillingListener){
+
+    public void init(BillingProcessor.IBillingHandler appBillingListener) {
         dialog = new ProgressDialog(context);
         dialog.setMessage("please wait...");
         dialog.show();
@@ -130,6 +141,7 @@ public class ArcInAppBilling {
                 context.getString(R.string.gp_inapp_marchent), appBillingListener);
         bp.initialize();
     }
+
     public void onBillingInitialized() {
         if (dialog.isShowing()) {
             dialog.dismiss();

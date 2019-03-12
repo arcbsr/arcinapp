@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 
 import arcmonitize.Settings;
+import arcmonitize.VLog;
+import arcmonitize.inApp.ArcInAppBilling;
 import arcmonitize.inApp.InAppBillingBaseActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,8 +19,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                VLog.w(InAppBillingBaseActivity.
+                        isPurchased(MainActivity.this,
+                                Settings.KEY_INAPP_TEST) + "");
+
                 InAppBillingBaseActivity.startActivityForPurchase(MainActivity.this,
-                        1000, Settings.KEY_INAPP_TEST + "s");
+                        1000, Settings.KEY_INAPP_TEST);
 
             }
         });
@@ -28,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1000) {
+//            InAppBillingBaseActivity.setPurchased(MainActivity.this,data);
             Log.w("onActivityResult", data.getStringExtra(InAppBillingBaseActivity.KEY_PRODUCT_ID));
             Log.w("onActivityResult",
                     data.getStringExtra(InAppBillingBaseActivity.KEY_RESULTMSG));
