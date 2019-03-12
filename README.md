@@ -1,7 +1,7 @@
 # arcinapp
 
 
-    implementation 'com.github.arcbsr:arcinapp:111'
+    implementation 'com.github.arcbsr:arcinapp:112'
     
     maven { url 'https://jitpack.io' }
     
